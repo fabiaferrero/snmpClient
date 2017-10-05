@@ -44,49 +44,28 @@ namespace SnmpClient
             this.pdu = new Pdu();
             this.ipa = new IpAddress("192.168.1.96");//meglio passare tramite textbox
             this.target = new UdpTarget((IPAddress)ipa);
-            //AuthEngineID, AuthEngineBoots, AuthEngineTime, SecurityName, ContextEngineID and ContextName
-
-            Socket s = new Socket(SocketType.Dgram, ProtocolType.Udp);
-            iplong=IP2Long("192.168.1.96");
+            Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
             SnmpV3Packet discovery = SnmpV3Packet.DiscoveryRequest(); //crea pck v3
+          
             byte[] outBuffer = discovery.encode(); //buffer per invio
-            byte[] inBuffer = new byte[1024];
-            int  inLength = 0;
-
-
-            //try
-            //{
-
-            //    int i = s.SendTo(outBuffer, new IPEndPoint(3232235872, port: 161));
-            //    Console.WriteLine("Sent {0} bytes.", i);
-
-            //    // Get reply from the server.
-            //    int byteCount = s.Receive(inBuffer, s.Available,SocketFlags.None);
-            //    Console.WriteLine("received {0} bytes.", byteCount);
-            //    inLength = inBuffer.Length;
-            //    if (byteCount > 0)
-            //        Console.WriteLine(System.Text.Encoding.UTF8.GetString(inBuffer));
-            //}
-            //catch (SocketException e)
-            //{
-            //    Console.WriteLine("{0} Error code: {1}.", e.Message, e.ErrorCode);
-
-            //}
-
-
-
-            s.SendTo(outBuffer, new IPEndPoint(, port: 161)); //invio pck
-            Console.WriteLine("pre receive");
+            byte[] inBuffer = new byte[4096];
+            int  inLength = outBuffer.Length;
+            EndPoint end = new IPEndPoint(1610721472, 161);
+            
+            s.SendTo(outBuffer, new IPEndPoint(1610721472, port: 161)); //invio pck
             s.Receive(inBuffer); //risposta da agente
-            Console.WriteLine("post receive");
             inLength = inBuffer.Length;
             discovery.decode(inBuffer, inLength);
 
-            
             if (discovery.Version != SnmpVersion.Ver3)
             {
                 Console.WriteLine("versione snmp errata");
+                return; //versione non valida di snmp
+            }
+            if (discovery.Version == SnmpVersion.Ver3)
+            {
+                Console.WriteLine("versione snmp"+discovery.Version);
                 return; //versione non valida di snmp
             }
             if (discovery.Pdu.Type != PduType.Report)
@@ -113,8 +92,9 @@ namespace SnmpClient
             request.MaxMessageSize = maxMessageSize;// Set maximum message size
             request.ScopedPdu.Type = PduType.Get;// Set Pdu type to Get
             request.ScopedPdu.VbList.Add("1.3.6.1.4.1.367.3.2.1.2.19.1.0");// Add Oid to query to the VbList
+
             outBuffer = request.encode();// Encode request
-            s.SendTo(outBuffer, new IPEndPoint(iplong, 161)); //invio pck
+            s.SendTo(outBuffer, new IPEndPoint(1610721472, 161)); //invio pck
             s.Receive(inBuffer); //risposta da agente
             request.decode(inBuffer, inLength);
 
@@ -130,6 +110,11 @@ namespace SnmpClient
               response.ScopedPdu.VbList[0].Value.ToString());
 
         
+        }
+
+        private void Sleep(int v)
+        {
+            throw new NotImplementedException();
         }
 
         private void MACBotton_Click(object sender, EventArgs e)
@@ -359,8 +344,8 @@ namespace SnmpClient
 
                     foreach (Vb v in result.ScopedPdu.VbList)
                     {
-                        Console.WriteLine("OID magenta{0} -> ({1}) {2}", v.Oid.ToString(), SnmpConstants.GetTypeName(v.Value.Type), v.Value.ToString());
-                        progressBarMagenta.Value = Int32.Parse(v.Value.ToString());
+                        //Console.WriteLine("OID magenta{0} -> ({1}) {2}", v.Oid.ToString(), SnmpConstants.GetTypeName(v.Value.Type), v.Value.ToString());
+                        //progressBarMagenta.Value = Int32.Parse(v.Value.ToString());
                     }
                 }
                 else
@@ -369,9 +354,8 @@ namespace SnmpClient
                     {
                         foreach (Vb v in result.ScopedPdu.VbList)
                         {
-                            Console.WriteLine("{0} -> ({1}) {2}",
-                              v.Oid.ToString(),
-                              SnmpConstants.GetTypeName(v.Value.Type), v.Value.ToString());
+                            Console.WriteLine("OID magenta{0} -> ({1}) {2}", v.Oid.ToString(), SnmpConstants.GetTypeName(v.Value.Type), v.Value.ToString());
+                            progressBarMagenta.Value = Int32.Parse(v.Value.ToString());
                         }
                     }
                     else
