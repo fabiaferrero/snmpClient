@@ -70,7 +70,7 @@
             this.MacBotton.Name = "MacBotton";
             this.MacBotton.Size = new System.Drawing.Size(148, 23);
             this.MacBotton.TabIndex = 1;
-            this.MacBotton.Text = "MAC Stampante";
+            this.MacBotton.Text = "IndirizzoMac";
             this.MacBotton.UseVisualStyleBackColor = false;
             this.MacBotton.Click += new System.EventHandler(this.MACBotton_Click);
             // 
