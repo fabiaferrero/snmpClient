@@ -132,7 +132,7 @@
             this.discoverBotton.TabIndex = 6;
             this.discoverBotton.Text = "Discover Stampanti";
             this.discoverBotton.UseVisualStyleBackColor = false;
-            this.discoverBotton.Click += new System.EventHandler(this.discoverBotton_Click);
+            this.discoverBotton.Click += new System.EventHandler(this.discoverBotton_ClickAsync);
             // 
             // discoverLabel
             // 

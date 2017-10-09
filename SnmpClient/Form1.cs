@@ -4,16 +4,18 @@ using System.Windows.Forms;
 using System.Net;
 using SnmpSharpNet;
 using System.Net.Sockets;
+using Lextm.SharpSnmpLib;
+using Lextm.SharpSnmpLib.Messaging;
 
 namespace SnmpClient
 {
     public partial class Form1 : Form
     {
-        OctetString community;                            
+        SnmpSharpNet.OctetString community;                            
         AgentParameters param;                        
         IpAddress agent;                                
         UdpTarget target;
-
+        
 
         public Form1()
         {
@@ -23,7 +25,7 @@ namespace SnmpClient
 
         private void InizializzaSNMP()
         {
-            community = new OctetString("public");                                //SNMP community name, di default "public"
+            community = new SnmpSharpNet.OctetString("public");                                //SNMP community name, di default "public"
             param = new AgentParameters(community);                               //Definisce parametri dell'agente, secondo community name
             param.Version = SnmpVersion.Ver1;                                     //Definizione versione SNMP 1
             agent = new IpAddress("192.168.1.96");                                //Definizione indirizzo IP della macchina
@@ -89,41 +91,23 @@ namespace SnmpClient
                 Console.WriteLine("Nessuna risposta dall'agente SNMP");
             }      
     }
+        
 
-        private void discoverBotton_Click(object sender, EventArgs e)
+        private async void discoverBotton_ClickAsync(object sender, EventArgs e)
         {
-            List<IpAddress> ListaStampantiRete = new List<IpAddress>();
-            string ipDiscovery;
+                Discoverer discoverer = new Discoverer();
+                discoverer.AgentFound += DiscovererAgentFound;
+                Console.WriteLine("v1 discovery");
+                await discoverer.DiscoverAsync(VersionCode.V1, new IPEndPoint(IPAddress.Broadcast, 161), new Lextm.SharpSnmpLib.OctetString("public"), 6000);
+               
+            }
 
-            //for (int i = 0; i <= 96; i++)
-            //{
-                //String num = Convert.ToString(i);
-                ipDiscovery = "192.168.1.96" ;
-                IpAddress ip = new IpAddress(ipDiscovery);
-                UdpTarget Possibiletarget = new UdpTarget((IPAddress)ip);
-                Possibiletarget.Retry = 0;
-                SecureAgentParameters paramTarget = new SecureAgentParameters();
-                paramTarget.noAuthNoPriv("public");
-                OctetString engine = new OctetString("");
+            static void DiscovererAgentFound(object sender, AgentFoundEventArgs e)
+            {
+                Console.WriteLine("DIspositivo Trovato IP:{0}--{1}", e.Agent, e.Variable);
+            }
 
-            //if (paramTarget.EngineId == engine)
-            //{
-            //    Console.WriteLine("non stampante");
-            //}
-            Console.WriteLine("fine auth");
-                
-                {
-                    Console.WriteLine("IP" + ip);
-                    ListaStampantiRete.Add(ip);
-                    discoverLabel.Text = Convert.ToString(ip);
-                    return;
-                }
-            
-            
-
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
+            private void Form1_Load(object sender, EventArgs e)
         {
 
         }
