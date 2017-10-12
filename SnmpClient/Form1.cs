@@ -15,7 +15,6 @@ namespace SnmpClient
         AgentParameters param;                        
         IpAddress agent;                                
         UdpTarget target;
-        
 
         public Form1()
         {
@@ -25,7 +24,7 @@ namespace SnmpClient
 
         private void InizializzaSNMP()
         {
-            community = new SnmpSharpNet.OctetString("public");                                //SNMP community name, di default "public"
+            community = new SnmpSharpNet.OctetString("public");                   //SNMP community name, di default "public"
             param = new AgentParameters(community);                               //Definisce parametri dell'agente, secondo community name
             param.Version = SnmpVersion.Ver1;                                     //Definizione versione SNMP 1
             agent = new IpAddress("192.168.1.96");                                //Definizione indirizzo IP della macchina
@@ -35,7 +34,7 @@ namespace SnmpClient
         private void MACBotton_Click(object sender, EventArgs e)
         {
             Pdu pdu = new Pdu(PduType.Get);                                                 //Unità dati dello scambio messaggi SNMP
-            pdu.VbList.Add(".1.3.6.1.2.1.3.1.1.2.1.1.192.168.1.32");                                            //Indirizzo MAC
+            pdu.VbList.Add(".1.3.6.1.2.1.3.1.1.2.1.1.192.168.1.32");                        //Indirizzo MAC
            
             SnmpV1Packet result = (SnmpV1Packet)target.Request(pdu, param);                 //Richiesta SNMP
 
@@ -43,7 +42,7 @@ namespace SnmpClient
             {
                 if (result.Pdu.ErrorStatus != 0)
                 {
-                    Console.WriteLine("Errore durante la richiesta SNMP. Errore {0} index {1}", result.Pdu.ErrorStatus, result.Pdu.ErrorIndex);
+                    Console.WriteLine("Errore durante la richiesta SNMP. Errore {0} index {1}", result.Pdu.ErrorStatus, result.Pdu.ErrorIndex); //errore e codice dell'errore
                 }
                 else
                 {
@@ -90,34 +89,33 @@ namespace SnmpClient
             {
                 Console.WriteLine("Nessuna risposta dall'agente SNMP");
             }      
-    }
+        }
         
 
-        private async void discoverBotton_ClickAsync(object sender, EventArgs e)
+        private async void discoverBotton_ClickAsync(object sender, EventArgs e) //controlla la rete locale per individuare le stampanti. Sono individuate tramite risposta al broadcast
         {
-                Discoverer discoverer = new Discoverer();
-                discoverer.AgentFound += DiscovererAgentFound;
-                Console.WriteLine("v1 discovery");
-                await discoverer.DiscoverAsync(VersionCode.V1, new IPEndPoint(IPAddress.Broadcast, 161), new Lextm.SharpSnmpLib.OctetString("public"), 6000);
-               
-            }
+            Discoverer discoverer = new Discoverer();
+            discoverer.AgentFound += DiscovererAgentFound;
+            Console.WriteLine("v1 discovery");
+            await discoverer.DiscoverAsync(VersionCode.V1, new IPEndPoint(IPAddress.Broadcast, 161), new Lextm.SharpSnmpLib.OctetString("public"), 6000);    
+        }
 
-            static void DiscovererAgentFound(object sender, AgentFoundEventArgs e)
-            {
-                Console.WriteLine("DIspositivo Trovato IP:{0}--{1}", e.Agent, e.Variable);
-            }
+        static void DiscovererAgentFound(object sender, AgentFoundEventArgs e)
+        {
+            Console.WriteLine("Dispositivo Trovato IP:{0}--{1}", e.Agent, e.Variable); //Dispositivo trovato nella rete
+        }
 
-            private void Form1_Load(object sender, EventArgs e)
+        private void Form1_Load(object sender, EventArgs e)
         {
 
         }
 
-        private void SNMPBotton_Click(object sender, EventArgs e)
+        private void SNMPBotton_Click(object sender, EventArgs e)//restituisce la versione di SNMP
         {
             VersioneLabel.Text= param.Version.ToString();
         }
 
-        private void magentaBotton_Click(object sender, EventArgs e)
+        private void magentaBotton_Click(object sender, EventArgs e)//controlla lo stato di inchiostro
         {
             Pdu pdu = new Pdu(PduType.Get);                                                 //Unità dati dello scambio messaggi SNMP
             pdu.VbList.Add("1.3.6.1.4.1.367.3.2.1.2.24.1.1.5.4");                           //Yellow
@@ -134,7 +132,7 @@ namespace SnmpClient
                     Console.WriteLine("Errore durante la richiesta SNMP. Errore {0} index {1}", result.Pdu.ErrorStatus, result.Pdu.ErrorIndex);
                     
                 }
-                else
+                else//riempe le progressbar
                 {
                     if (Convert.ToInt32(result.Pdu.VbList[0].Value.ToString()) == -100)
                     progressBarYellow.Value = 0;
