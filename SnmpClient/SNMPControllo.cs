@@ -5,7 +5,10 @@ using SnmpSharpNet;
 using Lextm.SharpSnmpLib;
 using Lextm.SharpSnmpLib.Messaging;
 using System.Data.Objects;
+using System.Collections;
 using System.Data.Objects.DataClasses;
+using System.Collections.Generic;
+using System.IO;
 
 namespace SnmpClient
 {
@@ -17,6 +20,7 @@ namespace SnmpClient
         UdpTarget target;
         private SNMPEntities SNMPContext;
         int id = 0;
+        logger log;
 
         public SNMPControllo()
         {
@@ -32,15 +36,15 @@ namespace SnmpClient
             agent = new IpAddress("192.168.1.96");                                //Definizione indirizzo IP della macchina
             target = new UdpTarget((IPAddress)agent, 161, 2000, 1);               //Definizione metodo con cui comunicare con la stampante: UDP, porta, timeout, retry
         }
-
+     
 
         private void CheckStampanteBotton_Click(object sender, EventArgs e)
         {
-            Pdu pdu = new Pdu(PduType.Get);                                                 //Unità dati dello scambio messaggi SNMP
+            Pdu pdu = new Pdu(PduType.Get);                                                   //Unità dati dello scambio messaggi SNMP
             //pdu.VbList.Add("1.3.6.1.2.1.1.1.0");                                            //Definizione generale dispositivo
             //pdu.VbList.Add("1.3.6.1.2.1.13.0");                                             //Tempo attività
-            pdu.VbList.Add("1.3.6.1.2.1.1.5.0");                                            //Nome dipositivo
-            pdu.VbList.Add("1.3.6.1.4.1.367.3.2.1.2.19.1.0");                               //Stampe totali complete
+            pdu.VbList.Add("1.3.6.1.2.1.1.5.0");                                              //Nome dipositivo
+            pdu.VbList.Add("1.3.6.1.4.1.367.3.2.1.2.19.1.0");                                 //Stampe totali complete
             //pdu.VbList.Add(".1.3.6.1.4.1.367.3.2.1.2.19.2.0");                              //Stampe totali complete Stampante
             //pdu.VbList.Add(".1.3.6.1.4.1.367.3.2.1.2.19.4.0");                              //Stampe totali complete Fotocopiatrice
             //pdu.VbList.Add(".1.3.6.1.2.1.3.1.1.2.1.1.192.168.1.32");                        //Indirizzo MAC
@@ -66,9 +70,7 @@ namespace SnmpClient
                     //Console.WriteLine("Stampe totali complete Stampante: ({0}): {1}", SnmpConstants.GetTypeName(result.Pdu.VbList[4].Value.Type), result.Pdu.VbList[4].Value.ToString());
                     //Console.WriteLine("Stampe totali complete Fotocopiatrice: ({0}): {1}", SnmpConstants.GetTypeName(result.Pdu.VbList[5].Value.Type), result.Pdu.VbList[5].Value.ToString());
 
-
                     SNMPContext = new SNMPEntities();
-
 
                     Stampanti risultatoSNMP = new Stampanti
                     {
@@ -85,7 +87,7 @@ namespace SnmpClient
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("Errore nell'inserimento dei dati "+ex);  
+                        Console.WriteLine("Errore nell'inserimento dei dati " + ex);
                     }
                     SNMPContext.SaveChanges();
                     MessageBox.Show("Elementi salvati nel database.");
@@ -98,9 +100,10 @@ namespace SnmpClient
 
         }
 
+    
 
         private async void discoverBotton_ClickAsync(object sender, EventArgs e) //controlla la rete locale per individuare le stampanti. Sono individuate tramite risposta al broadcast
-        {
+        { 
             Discoverer discoverer = new Discoverer();
             discoverer.AgentFound += DiscovererAgentFound;
             Console.WriteLine("v1 discovery");
@@ -109,9 +112,12 @@ namespace SnmpClient
 
         static void DiscovererAgentFound(object sender, AgentFoundEventArgs e)
         {
-            Console.WriteLine("Dispositivo Trovato IP:{0}--{1}", e.Agent, e.Variable); //Dispositivo trovato nella rete
+           //((e.Agent.ToString(), e.Variable.Data.ToString()); //Dispositivo trovato nella rete
+            Console.WriteLine("Dispositivo Trovato IP:{0}--{1}", e.Agent, e.Variable.Data); //Dispositivo trovato nella rete
         }
-
 
     }
 }
+
+
+//Aggiungere nella tabella un campo per la ricerca mirata di un dato
