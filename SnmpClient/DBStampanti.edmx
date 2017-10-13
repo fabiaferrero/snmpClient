@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="SNMPModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <!--Errori trovati durante la generazione:
+avviso 6002: Nessuna chiave primaria definita per la tabella/visualizzazione 'Fabia_SNMP.dbo.OIDStampanti'. La chiave è stata dedotta e la definizione è stata creata come tabella/visualizzazione di sola lettura.-->
+        <EntityType Name="OIDStampanti">
+          <Key>
+            <PropertyRef Name="OID" />
+            <PropertyRef Name="Marca" />
+          </Key>
+          <Property Name="OID" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Marca" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Stampanti">
+          <Key>
+            <PropertyRef Name="IDStampante" />
+          </Key>
+          <Property Name="IDStampante" Type="int" Nullable="false" />
+          <Property Name="Nome" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="IP" Type="varchar" MaxLength="15" Nullable="false" />
+          <Property Name="NumeroStampe" Type="int" Nullable="false" />
+          <Property Name="Data" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityContainer Name="SNMPModelStoreContainer">
+          <EntitySet Name="Stampanti" EntityType="Self.Stampanti" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OIDStampanti" EntityType="Self.OIDStampanti" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [OIDStampanti].[OID] AS [OID], 
+    [OIDStampanti].[Marca] AS [Marca]
+    FROM [dbo].[OIDStampanti] AS [OIDStampanti]</DefiningQuery>
+          </EntitySet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="SNMPModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="SNMPEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Stampantis" EntityType="SNMPModel.Stampanti" />
+          <EntitySet Name="OIDStampantis" EntityType="SNMPModel.OIDStampanti" />
+        </EntityContainer>
+        <EntityType Name="Stampanti">
+          <Key>
+            <PropertyRef Name="IDStampante" />
+          </Key>
+          <Property Name="IDStampante" Type="Int32" Nullable="false" />
+          <Property Name="Nome" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="IP" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="NumeroStampe" Type="Int32" Nullable="false" />
+          <Property Name="Data" Type="DateTime" Nullable="false" Precision="7" />
+        </EntityType>
+        <EntityType Name="OIDStampanti">
+          <Key>
+            <PropertyRef Name="OID" />
+            <PropertyRef Name="Marca" />
+          </Key>
+          <Property Name="OID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Marca" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="SNMPModelStoreContainer" CdmEntityContainer="SNMPEntities">
+          <EntitySetMapping Name="Stampantis">
+            <EntityTypeMapping TypeName="SNMPModel.Stampanti">
+              <MappingFragment StoreEntitySet="Stampanti">
+                <ScalarProperty Name="Data" ColumnName="Data" />
+                <ScalarProperty Name="NumeroStampe" ColumnName="NumeroStampe" />
+                <ScalarProperty Name="IP" ColumnName="IP" />
+                <ScalarProperty Name="Nome" ColumnName="Nome" />
+                <ScalarProperty Name="IDStampante" ColumnName="IDStampante" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OIDStampantis">
+            <EntityTypeMapping TypeName="SNMPModel.OIDStampanti">
+              <MappingFragment StoreEntitySet="OIDStampanti">
+                <ScalarProperty Name="Marca" ColumnName="Marca" />
+                <ScalarProperty Name="OID" ColumnName="OID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Nessuno" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
