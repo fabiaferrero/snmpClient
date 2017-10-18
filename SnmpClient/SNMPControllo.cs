@@ -20,7 +20,7 @@ namespace SnmpClient
         UdpTarget target;
         private SNMPEntities SNMPContext;
         int id = 0;
-        logger log;
+
 
         public SNMPControllo()
         {
@@ -100,7 +100,16 @@ namespace SnmpClient
 
         }
 
-    
+        public static void Log(String ip, String disp)
+        {
+            StreamWriter w= File.AppendText("Log.txt");
+            w.Write("Stampante Trovata: ");
+            w.WriteLine("{0} {1}", DateTime.Now.ToLongTimeString(), DateTime.Now.ToLongDateString());
+            w.WriteLine("->Nome: {0}, IP:{1}", disp, ip);
+            w.WriteLine("---------------------------------------------------------------------------------------------------------------------------------");
+            w.Flush();
+            w.Close();
+        }
 
         private async void discoverBotton_ClickAsync(object sender, EventArgs e) //controlla la rete locale per individuare le stampanti. Sono individuate tramite risposta al broadcast
         { 
@@ -112,8 +121,8 @@ namespace SnmpClient
 
         static void DiscovererAgentFound(object sender, AgentFoundEventArgs e)
         {
-           //((e.Agent.ToString(), e.Variable.Data.ToString()); //Dispositivo trovato nella rete
-            Console.WriteLine("Dispositivo Trovato IP:{0}--{1}", e.Agent, e.Variable.Data); //Dispositivo trovato nella rete
+            Log(e.Agent.ToString(), e.Variable.Data.ToString()); //Dispositivo trovato nella rete
+            //Console.WriteLine("Dispositivo Trovato IP:{0}--{1}", e.Agent, e.Variable.Data); //Dispositivo trovato nella rete
         }
 
     }
