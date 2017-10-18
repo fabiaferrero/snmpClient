@@ -100,10 +100,10 @@ namespace SnmpClient
 
         }
 
-        public static void Log(String ip, String disp)
+        public static void Log(String ip, String disp)//costruzione messaggio del log
         {
             StreamWriter w= File.AppendText("Log.txt");
-            w.Write("Stampante Trovata: ");
+            w.Write("Dispositivo Trovato: ");
             w.WriteLine("{0} {1}", DateTime.Now.ToLongTimeString(), DateTime.Now.ToLongDateString());
             w.WriteLine("->Nome: {0}, IP:{1}", disp, ip);
             w.WriteLine("---------------------------------------------------------------------------------------------------------------------------------");
@@ -121,8 +121,7 @@ namespace SnmpClient
 
         static void DiscovererAgentFound(object sender, AgentFoundEventArgs e)
         {
-            Log(e.Agent.ToString(), e.Variable.Data.ToString()); //Dispositivo trovato nella rete
-            //Console.WriteLine("Dispositivo Trovato IP:{0}--{1}", e.Agent, e.Variable.Data); //Dispositivo trovato nella rete
+            Log(e.Agent.ToString(), e.Variable.Data.ToString()); //Dispositivo trovato nella rete e scritto nel file di log
         }
 
     }

@@ -67,7 +67,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(309, 298);
+            this.ClientSize = new System.Drawing.Size(309, 92);
             this.Controls.Add(this.discoverBotton);
             this.Controls.Add(this.CheckStampante);
             this.Name = "SNMPControllo";
