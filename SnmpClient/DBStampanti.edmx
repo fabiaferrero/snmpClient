@@ -6,6 +6,28 @@
     <edmx:StorageModels>
     <Schema Namespace="SNMPModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <!--Errori trovati durante la generazione:
+avviso 6002: Nessuna chiave primaria definita per la tabella/visualizzazione 'Fabia_SNMP.dbo.OIDRicoh'. La chiave è stata dedotta e la definizione è stata creata come tabella/visualizzazione di sola lettura.-->
+        <EntityType Name="OIDRicoh">
+          <Key>
+            <PropertyRef Name="Uptime" />
+            <PropertyRef Name="Nome" />
+            <PropertyRef Name="Stampe" />
+            <PropertyRef Name="MAC" />
+            <PropertyRef Name="Yellow" />
+            <PropertyRef Name="Magenta" />
+            <PropertyRef Name="Ciano" />
+            <PropertyRef Name="Black" />
+          </Key>
+          <Property Name="Uptime" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Nome" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Stampe" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="MAC" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Yellow" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Magenta" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Ciano" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Black" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <!--Errori trovati durante la generazione:
 avviso 6002: Nessuna chiave primaria definita per la tabella/visualizzazione 'Fabia_SNMP.dbo.OIDStampanti'. La chiave è stata dedotta e la definizione è stata creata come tabella/visualizzazione di sola lettura.-->
         <EntityType Name="OIDStampanti">
           <Key>
@@ -27,6 +49,18 @@ avviso 6002: Nessuna chiave primaria definita per la tabella/visualizzazione 'Fa
         </EntityType>
         <EntityContainer Name="SNMPModelStoreContainer">
           <EntitySet Name="Stampanti" EntityType="Self.Stampanti" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OIDRicoh" EntityType="Self.OIDRicoh" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [OIDRicoh].[Uptime] AS [Uptime], 
+    [OIDRicoh].[Nome] AS [Nome], 
+    [OIDRicoh].[Stampe] AS [Stampe], 
+    [OIDRicoh].[MAC] AS [MAC], 
+    [OIDRicoh].[Yellow] AS [Yellow], 
+    [OIDRicoh].[Magenta] AS [Magenta], 
+    [OIDRicoh].[Ciano] AS [Ciano], 
+    [OIDRicoh].[Black] AS [Black]
+    FROM [dbo].[OIDRicoh] AS [OIDRicoh]</DefiningQuery>
+          </EntitySet>
           <EntitySet Name="OIDStampanti" EntityType="Self.OIDStampanti" store:Type="Tables" store:Schema="dbo">
             <DefiningQuery>SELECT 
     [OIDStampanti].[OID] AS [OID], 
@@ -41,6 +75,7 @@ avviso 6002: Nessuna chiave primaria definita per la tabella/visualizzazione 'Fa
         <EntityContainer Name="SNMPEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Stampantis" EntityType="SNMPModel.Stampanti" />
           <EntitySet Name="OIDStampantis" EntityType="SNMPModel.OIDStampanti" />
+          <EntitySet Name="OIDRicohs" EntityType="SNMPModel.OIDRicoh" />
         </EntityContainer>
         <EntityType Name="Stampanti">
           <Key>
@@ -59,6 +94,26 @@ avviso 6002: Nessuna chiave primaria definita per la tabella/visualizzazione 'Fa
           </Key>
           <Property Name="OID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="Marca" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="OIDRicoh">
+          <Key>
+            <PropertyRef Name="Uptime" />
+            <PropertyRef Name="Nome" />
+            <PropertyRef Name="Stampe" />
+            <PropertyRef Name="MAC" />
+            <PropertyRef Name="Yellow" />
+            <PropertyRef Name="Magenta" />
+            <PropertyRef Name="Ciano" />
+            <PropertyRef Name="Black" />
+          </Key>
+          <Property Name="Uptime" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Nome" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Stampe" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="MAC" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Yellow" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Magenta" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Ciano" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Black" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -82,6 +137,20 @@ avviso 6002: Nessuna chiave primaria definita per la tabella/visualizzazione 'Fa
               <MappingFragment StoreEntitySet="OIDStampanti">
                 <ScalarProperty Name="Marca" ColumnName="Marca" />
                 <ScalarProperty Name="OID" ColumnName="OID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OIDRicohs">
+            <EntityTypeMapping TypeName="SNMPModel.OIDRicoh">
+              <MappingFragment StoreEntitySet="OIDRicoh">
+                <ScalarProperty Name="Black" ColumnName="Black" />
+                <ScalarProperty Name="Ciano" ColumnName="Ciano" />
+                <ScalarProperty Name="Magenta" ColumnName="Magenta" />
+                <ScalarProperty Name="Yellow" ColumnName="Yellow" />
+                <ScalarProperty Name="MAC" ColumnName="MAC" />
+                <ScalarProperty Name="Stampe" ColumnName="Stampe" />
+                <ScalarProperty Name="Nome" ColumnName="Nome" />
+                <ScalarProperty Name="Uptime" ColumnName="Uptime" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

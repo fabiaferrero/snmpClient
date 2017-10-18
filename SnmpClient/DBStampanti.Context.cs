@@ -27,5 +27,11 @@ namespace SnmpClient
     
         public virtual DbSet<Stampanti> Stampantis { get; set; }
         public virtual DbSet<OIDStampanti> OIDStampantis { get; set; }
+        public virtual DbSet<OIDRicoh> OIDRicohs { get; set; }
+
+        internal object GetTable<T>()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

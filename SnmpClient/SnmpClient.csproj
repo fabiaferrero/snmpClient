@@ -81,6 +81,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DBStampanti.edmx</DependentUpon>
     </Compile>
+    <Compile Include="OIDRicoh.cs">
+      <DependentUpon>DBStampanti.tt</DependentUpon>
+    </Compile>
     <Compile Include="OIDStampanti.cs">
       <DependentUpon>DBStampanti.tt</DependentUpon>
     </Compile>

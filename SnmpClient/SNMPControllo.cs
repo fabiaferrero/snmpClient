@@ -4,11 +4,8 @@ using System.Net;
 using SnmpSharpNet;
 using Lextm.SharpSnmpLib;
 using Lextm.SharpSnmpLib.Messaging;
-using System.Data.Objects;
-using System.Collections;
-using System.Data.Objects.DataClasses;
-using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace SnmpClient
 {
@@ -25,6 +22,7 @@ namespace SnmpClient
         public SNMPControllo()
         {
             InizializzaSNMP();
+            SimpleQuery();
             InitializeComponent();
         }
 
@@ -36,22 +34,27 @@ namespace SnmpClient
             agent = new IpAddress("192.168.1.96");                                //Definizione indirizzo IP della macchina
             target = new UdpTarget((IPAddress)agent, 161, 2000, 1);               //Definizione metodo con cui comunicare con la stampante: UDP, porta, timeout, retry
         }
-     
+
+        public void SimpleQuery()
+        {
+            SNMPEntities dc = new SNMPEntities();
+
+        var q =
+        from a in dc.OIDRicohs
+        select a;
+
+            string c = q.ToString();
+            Console.WriteLine("OID DA QUERY" + c);
+        }
 
         private void CheckStampanteBotton_Click(object sender, EventArgs e)
         {
             Pdu pdu = new Pdu(PduType.Get);                                                   //Unità dati dello scambio messaggi SNMP
-            //pdu.VbList.Add("1.3.6.1.2.1.1.1.0");                                            //Definizione generale dispositivo
-            //pdu.VbList.Add("1.3.6.1.2.1.13.0");                                             //Tempo attività
             pdu.VbList.Add("1.3.6.1.2.1.1.5.0");                                              //Nome dipositivo
             pdu.VbList.Add("1.3.6.1.4.1.367.3.2.1.2.19.1.0");                                 //Stampe totali complete
-            //pdu.VbList.Add(".1.3.6.1.4.1.367.3.2.1.2.19.2.0");                              //Stampe totali complete Stampante
-            //pdu.VbList.Add(".1.3.6.1.4.1.367.3.2.1.2.19.4.0");                              //Stampe totali complete Fotocopiatrice
-            //pdu.VbList.Add(".1.3.6.1.2.1.3.1.1.2.1.1.192.168.1.32");                        //Indirizzo MAC
-            //pdu.VbList.Add("1.3.6.1.4.1.367.3.2.1.2.24.1.1.5.4");                           //Yellow
-            //pdu.VbList.Add("1.3.6.1.4.1.367.3.2.1.2.24.1.1.5.3");                           //Magenta
-            //pdu.VbList.Add("1.3.6.1.4.1.367.3.2.1.2.24.1.1.5.2");                           //Ciano
-            //pdu.VbList.Add("1.3.6.1.4.1.367.3.2.1.2.24.1.1.5.1");                           //Black
+
+          
+
 
             SnmpV1Packet result = (SnmpV1Packet)target.Request(pdu, param);                 //Richiesta SNMP
 
@@ -63,13 +66,9 @@ namespace SnmpClient
                 }
                 else
                 {
-                    //Console.WriteLine("Dispositivo: ({0}): {1}", SnmpConstants.GetTypeName(result.Pdu.VbList[0].Value.Type), result.Pdu.VbList[0].Value.ToString());
-                    //Console.WriteLine("Tempo Attività: ({0}): {1}", SnmpConstants.GetTypeName(result.Pdu.VbList[1].Value.Type), result.Pdu.VbList[1].Value.ToString());
                     Console.WriteLine("Nome Dispositivo: ({0}): {1}", SnmpConstants.GetTypeName(result.Pdu.VbList[0].Value.Type), result.Pdu.VbList[0].Value.ToString());
                     Console.WriteLine("Stampe totali complete: ({0}): {1}", SnmpConstants.GetTypeName(result.Pdu.VbList[1].Value.Type), result.Pdu.VbList[1].Value.ToString());
-                    //Console.WriteLine("Stampe totali complete Stampante: ({0}): {1}", SnmpConstants.GetTypeName(result.Pdu.VbList[4].Value.Type), result.Pdu.VbList[4].Value.ToString());
-                    //Console.WriteLine("Stampe totali complete Fotocopiatrice: ({0}): {1}", SnmpConstants.GetTypeName(result.Pdu.VbList[5].Value.Type), result.Pdu.VbList[5].Value.ToString());
-
+                    
                     SNMPContext = new SNMPEntities();
 
                     Stampanti risultatoSNMP = new Stampanti
