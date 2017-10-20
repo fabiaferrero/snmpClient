@@ -92,7 +92,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Stampanti.cs">
+    <Compile Include="ValoriDatiStampanti.cs">
       <DependentUpon>DBStampanti.tt</DependentUpon>
     </Compile>
     <EmbeddedResource Include="SNMPControllo.resx">

@@ -4,9 +4,9 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="3e5f06c2c9844cb29ecaf72fcc0eed63" Name="Diagram1">
-        <EntityTypeShape EntityType="SNMPModel.Stampanti" Width="1.5" PointX="0.75" PointY="0.75" />
-        <EntityTypeShape EntityType="SNMPModel.OID" Width="1.5" PointX="2.875" PointY="0.75" />
+      <Diagram DiagramId="e041d682328d4bb0924f6a28d1444b77" Name="Diagram1">
+        <EntityTypeShape EntityType="SNMPModel.OID" Width="1.5" PointX="0.75" PointY="0.75" />
+        <EntityTypeShape EntityType="SNMPModel.ValoriDatiStampanti" Width="1.5" PointX="2.75" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

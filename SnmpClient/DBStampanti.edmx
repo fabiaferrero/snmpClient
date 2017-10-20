@@ -5,93 +5,87 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="SNMPModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-        <!--Errori trovati durante la generazione:
-avviso 6002: Nessuna chiave primaria definita per la tabella/visualizzazione 'Fabia_SNMP.dbo.OID'. La chiave è stata dedotta e la definizione è stata creata come tabella/visualizzazione di sola lettura.-->
         <EntityType Name="OID">
           <Key>
-            <PropertyRef Name="Vendor" />
-            <PropertyRef Name="Dato" />
-            <PropertyRef Name="NumeroOID" />
+            <PropertyRef Name="ID" />
           </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
           <Property Name="Vendor" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Dato" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="NumeroOID" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
-        <EntityType Name="Stampanti">
+        <EntityType Name="ValoriDatiStampanti">
           <Key>
             <PropertyRef Name="IDStampante" />
           </Key>
           <Property Name="IDStampante" Type="int" Nullable="false" />
-          <Property Name="Nome" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Nome" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="IP" Type="varchar" MaxLength="15" Nullable="false" />
-          <Property Name="NumeroStampe" Type="int" Nullable="false" />
+          <Property Name="TipoDato" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ValoreDato" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Data" Type="datetime2" Precision="7" Nullable="false" />
         </EntityType>
         <EntityContainer Name="SNMPModelStoreContainer">
-          <EntitySet Name="Stampanti" EntityType="Self.Stampanti" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="OID" EntityType="Self.OID" store:Type="Tables" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [OID].[Vendor] AS [Vendor], 
-    [OID].[Dato] AS [Dato], 
-    [OID].[NumeroOID] AS [NumeroOID]
-    FROM [dbo].[OID] AS [OID]</DefiningQuery>
-          </EntitySet>
+          <EntitySet Name="OID" EntityType="Self.OID" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ValoriDatiStampanti" EntityType="Self.ValoriDatiStampanti" Schema="dbo" store:Type="Tables" />
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="SNMPModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityContainer Name="SNMPEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Stampantis" EntityType="SNMPModel.Stampanti" />
+        <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="OIDs" EntityType="SNMPModel.OID" />
+          <EntitySet Name="ValoriDatiStampantis" EntityType="SNMPModel.ValoriDatiStampanti" />
         </EntityContainer>
-        <EntityType Name="Stampanti">
-          <Key>
-            <PropertyRef Name="IDStampante" />
-          </Key>
-          <Property Name="IDStampante" Type="Int32" Nullable="false" />
-          <Property Name="Nome" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="IP" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="false" />
-          <Property Name="NumeroStampe" Type="Int32" Nullable="false" />
-          <Property Name="Data" Type="DateTime" Nullable="false" Precision="7" />
-        </EntityType>
         <EntityType Name="OID">
           <Key>
-            <PropertyRef Name="Vendor" />
-            <PropertyRef Name="Dato" />
-            <PropertyRef Name="NumeroOID" />
+            <PropertyRef Name="ID" />
           </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" />
           <Property Name="Vendor" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="Dato" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="NumeroOID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
         </EntityType>
-      </Schema>
+        <EntityType Name="ValoriDatiStampanti">
+          <Key>
+            <PropertyRef Name="IDStampante" />
+          </Key>
+          <Property Name="IDStampante" Type="Int32" Nullable="false" />
+          <Property Name="Nome" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="IP" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="TipoDato" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ValoreDato" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Data" Type="DateTime" Nullable="false" Precision="7" />
+        </EntityType>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="SNMPModelStoreContainer" CdmEntityContainer="SNMPEntities">
-          <EntitySetMapping Name="Stampantis">
-            <EntityTypeMapping TypeName="SNMPModel.Stampanti">
-              <MappingFragment StoreEntitySet="Stampanti">
-                <ScalarProperty Name="Data" ColumnName="Data" />
-                <ScalarProperty Name="NumeroStampe" ColumnName="NumeroStampe" />
-                <ScalarProperty Name="IP" ColumnName="IP" />
-                <ScalarProperty Name="Nome" ColumnName="Nome" />
-                <ScalarProperty Name="IDStampante" ColumnName="IDStampante" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
+        <EntityContainerMapping StorageEntityContainer="SNMPModelStoreContainer" CdmEntityContainer="Entities">
           <EntitySetMapping Name="OIDs">
             <EntityTypeMapping TypeName="SNMPModel.OID">
               <MappingFragment StoreEntitySet="OID">
                 <ScalarProperty Name="NumeroOID" ColumnName="NumeroOID" />
                 <ScalarProperty Name="Dato" ColumnName="Dato" />
                 <ScalarProperty Name="Vendor" ColumnName="Vendor" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          </EntityContainerMapping>
+          <EntitySetMapping Name="ValoriDatiStampantis">
+            <EntityTypeMapping TypeName="SNMPModel.ValoriDatiStampanti">
+              <MappingFragment StoreEntitySet="ValoriDatiStampanti">
+                <ScalarProperty Name="Data" ColumnName="Data" />
+                <ScalarProperty Name="ValoreDato" ColumnName="ValoreDato" />
+                <ScalarProperty Name="TipoDato" ColumnName="TipoDato" />
+                <ScalarProperty Name="IP" ColumnName="IP" />
+                <ScalarProperty Name="Nome" ColumnName="Nome" />
+                <ScalarProperty Name="IDStampante" ColumnName="IDStampante" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>
