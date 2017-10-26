@@ -1,0 +1,175 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="SNMPModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="OID">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="Vendor" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Dato" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="NumeroOID" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Richiesto" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Stampanti">
+          <Key>
+            <PropertyRef Name="IDStampante" />
+          </Key>
+          <Property Name="IDStampante" Type="int" Nullable="false" />
+          <Property Name="Nome" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="IP" Type="varchar" MaxLength="17" Nullable="false" />
+          <Property Name="Data" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ValoriStampanti">
+          <Key>
+            <PropertyRef Name="IDValore" />
+          </Key>
+          <Property Name="IDValore" Type="int" Nullable="false" />
+          <Property Name="IDStampante" Type="int" Nullable="false" />
+          <Property Name="TipoDato" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Valore" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Data" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_ValoriStampanti_ValoriStampanti">
+          <End Role="Stampanti" Type="Self.Stampanti" Multiplicity="1" />
+          <End Role="ValoriStampanti" Type="Self.ValoriStampanti" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Stampanti">
+              <PropertyRef Name="IDStampante" />
+            </Principal>
+            <Dependent Role="ValoriStampanti">
+              <PropertyRef Name="IDStampante" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="SNMPModelStoreContainer">
+          <EntitySet Name="OID" EntityType="Self.OID" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Stampanti" EntityType="Self.Stampanti" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ValoriStampanti" EntityType="Self.ValoriStampanti" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_ValoriStampanti_ValoriStampanti" Association="Self.FK_ValoriStampanti_ValoriStampanti">
+            <End Role="Stampanti" EntitySet="Stampanti" />
+            <End Role="ValoriStampanti" EntitySet="ValoriStampanti" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="SNMPModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="OIDs" EntityType="SNMPModel.OID" />
+          <EntitySet Name="Stampantis" EntityType="SNMPModel.Stampanti" />
+          <EntitySet Name="ValoriStampantis" EntityType="SNMPModel.ValoriStampanti" />
+          <AssociationSet Name="FK_ValoriStampanti_ValoriStampanti" Association="SNMPModel.FK_ValoriStampanti_ValoriStampanti">
+            <End Role="Stampanti" EntitySet="Stampantis" />
+            <End Role="ValoriStampanti" EntitySet="ValoriStampantis" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="OID">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" />
+          <Property Name="Vendor" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Dato" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="NumeroOID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Richiesto" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Stampanti">
+          <Key>
+            <PropertyRef Name="IDStampante" />
+          </Key>
+          <Property Name="IDStampante" Type="Int32" Nullable="false" />
+          <Property Name="Nome" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="IP" Type="String" Nullable="false" MaxLength="17" FixedLength="false" Unicode="false" />
+          <Property Name="Data" Type="DateTime" Nullable="false" Precision="7" />
+          <NavigationProperty Name="ValoriStampantis" Relationship="SNMPModel.FK_ValoriStampanti_ValoriStampanti" FromRole="Stampanti" ToRole="ValoriStampanti" />
+        </EntityType>
+        <EntityType Name="ValoriStampanti">
+          <Key>
+            <PropertyRef Name="IDValore" />
+          </Key>
+          <Property Name="IDValore" Type="Int32" Nullable="false" />
+          <Property Name="IDStampante" Type="Int32" Nullable="false" />
+          <Property Name="TipoDato" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Valore" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Data" Type="DateTime" Nullable="false" Precision="7" />
+          <NavigationProperty Name="Stampanti" Relationship="SNMPModel.FK_ValoriStampanti_ValoriStampanti" FromRole="ValoriStampanti" ToRole="Stampanti" />
+        </EntityType>
+        <Association Name="FK_ValoriStampanti_ValoriStampanti">
+          <End Type="SNMPModel.Stampanti" Role="Stampanti" Multiplicity="1" />
+          <End Type="SNMPModel.ValoriStampanti" Role="ValoriStampanti" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Stampanti">
+              <PropertyRef Name="IDStampante" />
+            </Principal>
+            <Dependent Role="ValoriStampanti">
+              <PropertyRef Name="IDStampante" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="SNMPModelStoreContainer" CdmEntityContainer="Entities">
+          <EntitySetMapping Name="OIDs">
+            <EntityTypeMapping TypeName="SNMPModel.OID">
+              <MappingFragment StoreEntitySet="OID">
+                <ScalarProperty Name="Richiesto" ColumnName="Richiesto" />
+                <ScalarProperty Name="NumeroOID" ColumnName="NumeroOID" />
+                <ScalarProperty Name="Dato" ColumnName="Dato" />
+                <ScalarProperty Name="Vendor" ColumnName="Vendor" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Stampantis">
+            <EntityTypeMapping TypeName="SNMPModel.Stampanti">
+              <MappingFragment StoreEntitySet="Stampanti">
+                <ScalarProperty Name="Data" ColumnName="Data" />
+                <ScalarProperty Name="IP" ColumnName="IP" />
+                <ScalarProperty Name="Nome" ColumnName="Nome" />
+                <ScalarProperty Name="IDStampante" ColumnName="IDStampante" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ValoriStampantis">
+            <EntityTypeMapping TypeName="SNMPModel.ValoriStampanti">
+              <MappingFragment StoreEntitySet="ValoriStampanti">
+                <ScalarProperty Name="Data" ColumnName="Data" />
+                <ScalarProperty Name="Valore" ColumnName="Valore" />
+                <ScalarProperty Name="TipoDato" ColumnName="TipoDato" />
+                <ScalarProperty Name="IDStampante" ColumnName="IDStampante" />
+                <ScalarProperty Name="IDValore" ColumnName="IDValore" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Nessuno" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

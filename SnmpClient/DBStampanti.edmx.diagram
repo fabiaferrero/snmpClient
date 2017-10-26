@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="e041d682328d4bb0924f6a28d1444b77" Name="Diagram1">
+        <EntityTypeShape EntityType="SNMPModel.OID" Width="1.5" PointX="5.125" PointY="1.625" />
+        <EntityTypeShape EntityType="SNMPModel.Stampanti" Width="1.5" PointX="0.75" PointY="1" />
+        <EntityTypeShape EntityType="SNMPModel.ValoriStampanti" Width="1.5" PointX="3" PointY="0.875" />
+        <AssociationConnector Association="SNMPModel.FK_ValoriStampanti_ValoriStampanti" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
