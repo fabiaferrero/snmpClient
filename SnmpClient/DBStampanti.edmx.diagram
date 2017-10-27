@@ -5,10 +5,12 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="e041d682328d4bb0924f6a28d1444b77" Name="Diagram1">
-        <EntityTypeShape EntityType="SNMPModel.OID" Width="1.5" PointX="5.125" PointY="1.625" />
+        <EntityTypeShape EntityType="SNMPModel.Discovery" Width="1.5" PointX="3" PointY="1" />
+        <EntityTypeShape EntityType="SNMPModel.OID" Width="1.5" PointX="7.875" PointY="1.125" />
         <EntityTypeShape EntityType="SNMPModel.Stampanti" Width="1.5" PointX="0.75" PointY="1" />
-        <EntityTypeShape EntityType="SNMPModel.ValoriStampanti" Width="1.5" PointX="3" PointY="0.875" />
-        <AssociationConnector Association="SNMPModel.FK_ValoriStampanti_ValoriStampanti" />
+        <EntityTypeShape EntityType="SNMPModel.ValoriStampanti" Width="1.5" PointX="5.25" PointY="1" />
+        <AssociationConnector Association="SNMPModel.FK_Discovery_Stampanti" />
+        <AssociationConnector Association="SNMPModel.FK_ValoriStampanti_Discovery" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

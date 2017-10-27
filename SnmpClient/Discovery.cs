@@ -15,33 +15,37 @@ namespace SnmpClient
 using System;
     using System.Collections.Generic;
     
-public partial class Stampanti
+public partial class Discovery
 {
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-    public Stampanti()
+    public Discovery()
     {
 
-        this.Discoveries = new HashSet<Discovery>();
+        this.ValoriStampantis = new HashSet<ValoriStampanti>();
 
     }
 
+
+    public int IDDiscovery { get; set; }
 
     public int IDStampante { get; set; }
 
     public string Nome { get; set; }
 
-    public string IP { get; set; }
-
     public string MAC { get; set; }
 
     public System.DateTime Data { get; set; }
 
+    public string IP { get; set; }
 
+
+
+    public virtual Stampanti Stampanti { get; set; }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 
-    public virtual ICollection<Discovery> Discoveries { get; set; }
+    public virtual ICollection<ValoriStampanti> ValoriStampantis { get; set; }
 
 }
 

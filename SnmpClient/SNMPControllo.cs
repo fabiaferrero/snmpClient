@@ -6,6 +6,7 @@ using Lextm.SharpSnmpLib;
 using Lextm.SharpSnmpLib.Messaging;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace SnmpClient
 {
@@ -30,89 +31,129 @@ namespace SnmpClient
             agent = new IpAddress("192.168.1.96");                           //Definizione indirizzo IP della macchina
             target = new UdpTarget((IPAddress)agent, 161, 2000, 1);          //Definizione metodo con cui comunicare con la stampante: UDP, porta, timeout, retry
         }
-       
+
         private int CreaId(IQueryable<int> q)
         {
             int max = 0;
             foreach (var i in q)
             {
                 if (max < i)
-                        max = i;
+                    max = i;
             }
             return max + 1;
         }                                             //Crea ID del prossimo elemento da inserire nel DB risprendendo dall'ultimo                                                                                                                                     //Crea l'ID del prossimo elemento da salvare nel DB, riprendendo dall'ultimo inserito
-        private void SalvaDatiDiscovery(string ip, string nome)
+        private int ControllaStampanti(string IndirizzoMAC, string nome, string ip)       //controlla se nella tabella stampanti vi  già la stampante scoperta
         {
-           Stampanti Dispositivo = new Stampanti //salvataggio dati richiesti su database
+            int fk = 0;
+            var recordStampante = SNMPContext.Stampantis.Where(x => x.MAC == IndirizzoMAC);
+            if (recordStampante.Count() == 0)
             {
-                IDStampante = CreaId(SNMPContext.Stampantis.Select(x => x.IDStampante)),
-                Nome = nome,
-                IP = ip,
-                Data = DateTime.Now
-            };
-            try
-            {
-                SNMPContext.Stampantis.Add(Dispositivo);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Errore nell'inserimento dei dati " + ex);
-            }
-            try
-            {
+                Stampanti NuovaStampante = new Stampanti
+                {
+                    IDStampante = CreaId(SNMPContext.Stampantis.Select(x => x.IDStampante)),
+                    Nome = nome,
+                    IP = ip,
+                    MAC = IndirizzoMAC,
+                    Data = System.DateTime.Now
+                };
+                SNMPContext.Stampantis.Add(NuovaStampante);
                 SNMPContext.SaveChanges();
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine("Errore nel salvataggio dei dati " + ex);
+                foreach (var riga in recordStampante)
+                {
+                    fk = riga.IDStampante;
+                    riga.Data = DateTime.Now;
+                }
+                SNMPContext.SaveChanges();
             }
+            //Console.WriteLine("CHIAVE PRIMARIA"+fk);
+            return fk;
         }
+        private string RichiediMac(string IP, string oid_mac)
+        {
+            string mac = System.String.Empty;
+            Pdu pdu = new Pdu(PduType.Get);                                 //Unità dati dello scambio messaggi  
+            pdu.VbList.Add(oid_mac);                           //mac stampante
+            Console.WriteLine("OID RICHIESTO" + oid_mac);
+            SnmpV1Packet PckMac = (SnmpV1Packet)target.Request(pdu, param);
+            mac = GetDatoStampante(PckMac);
+            return mac;
+        }
+        private void SalvaDatiDiscovery(string ip, string nome)
+        {
+            string IndMac = System.String.Empty;
+            string produttore = System.String.Empty;
+            string oid_mac = System.String.Empty;
+            int ChiaveStampante;
+            var Allvendor = SNMPContext.OIDs.Select(x => x.Vendor);         //query per ottenere tutti i nomi dei vendor conosciuti
+            var vendor = Allvendor.Distinct();                              //distinct per eliminare i doppioni dall'elenco vendor
+
+            foreach (var v in vendor)
+            {
+                if (nome.Contains(v.ToString()))
+                {
+                    produttore = v.ToString();
+                    var item = SNMPContext.OIDs.Where(x => x.Vendor == produttore);
+                    foreach (var i in item)
+                    {
+                        if (i.TipoDato.Equals("MAC"))
+                            oid_mac = i.NumeroOID;
+                        //Console.WriteLine("MAC Richiesto"+produttore);
+                    }
+                }
+            }
+
+            IndMac = RichiediMac(ip, oid_mac);
+            ChiaveStampante = ControllaStampanti(IndMac, nome, ip);
+
+            Discovery DispositivoScoperto = new Discovery
+            {
+                IDDiscovery =CreaId(SNMPContext.Discoveries.Select(x=>x.IDDiscovery)),
+                IDStampante =ChiaveStampante,
+                MAC =IndMac,
+                IP =ip,
+                Nome =nome,
+                Data = System.DateTime.Now
+            };
+
+        SNMPContext.Discoveries.Add(DispositivoScoperto);
+        SNMPContext.SaveChanges();
+            
+        }
+
         private string TrovaTipoDato(IQueryable<string> t)
         {
-            Console.WriteLine("tipo :"+t.ToString());
-            string tipologia= System.String.Empty;
-            //foreach (var z in t)
-            //    Console.WriteLine("tipo :"+ z);
-            return tipologia;
+            string Tipo = System.String.Empty;
+            
+            return Tipo;
         }
 
         private void UpdateDB(SnmpV1Packet pck)
         {
-            foreach(var i in pck.Pdu.VbList)
+            foreach (var i in pck.Pdu.VbList)
             {
-                //return (from s in db.sims.Where(x => x.has_been_modified == true) select x).ToList();
-                ValoriStampanti risultatoSNMP = new ValoriStampanti //salvataggio dati richiesti su database
+                var listaOid = SNMPContext.OIDs.Where(x => x.NumeroOID.Equals(i.Oid));
+                foreach(var Myoid in listaOid)
                 {
-                    IDValore = CreaId(SNMPContext.ValoriStampantis.Select(x => x.IDValore)),
-                    IDStampante=0,
-                    TipoDato = TrovaTipoDato(SNMPContext.OIDs.Where(x => x.NumeroOID.Equals(i.Oid)).Select(x => x.Dato)),
-                    Valore = i.Value.ToString(),
-                    Data = DateTime.Now
-                };
-            }
-           
-            try
-            {
-                //SNMPContext.ValoriStampantis.Add(risultatoSNMP);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Errore nell'inserimento dei dati " + ex);
-            }
-            try
-            {
+                    ValoriStampanti risultatoSNMP = new ValoriStampanti //salvataggio dati richiesti su database
+                    {
+                        IDValore = CreaId(SNMPContext.ValoriStampantis.Select(x => x.IDValore)),
+                        IDDiscovery = 0,
+                        TipoDato = "C",
+                        Valore = i.Value.ToString(),
+                        Data = DateTime.Now
+                    };
+                    SNMPContext.ValoriStampantis.Add(risultatoSNMP);  
+                }
                 SNMPContext.SaveChanges();
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Errore nel salvataggio dei dati " + ex);
-            }
-            MessageBox.Show("Elementi salvati nel database.");
         }
 
-        private string GetNomeStampante(SnmpV1Packet pck)                                    //Analizza il pdu per ottenere il nome della stampante per verificare supporto
+        private string GetDatoStampante(SnmpV1Packet pck)                                    //Analizza il pdu per ottenere il nome della stampante per verificare supporto
         {
-            string NomeStampantePdu = System.String.Empty;
+            string StampantePdu = System.String.Empty;
             if (pck != null)
             {
                 if (pck.Pdu.ErrorStatus != 0)
@@ -122,15 +163,15 @@ namespace SnmpClient
                 else
                 {
                     Console.WriteLine("NomeStampantePdu: ({0}): {1}", SnmpConstants.GetTypeName(pck.Pdu.VbList[0].Value.Type), pck.Pdu.VbList[0].Value.ToString());
-                    NomeStampantePdu = pck.Pdu.VbList[0].Value.ToString();
-                    return NomeStampantePdu;
+                    StampantePdu = pck.Pdu.VbList[0].Value.ToString();
+                    return StampantePdu;
                 }
             }
             else
             {
                 Console.WriteLine("Nessuna risposta dall'agente SNMP");
             }
-            return NomeStampantePdu;
+            return StampantePdu;
         }
 
         private void SalvataggioDatiDB(SnmpV1Packet pck)                                //Analizza il pdu e carica il valore del dato richiesto su db
@@ -158,7 +199,7 @@ namespace SnmpClient
             Pdu pdu = new Pdu(PduType.Get);                                 //Unità dati dello scambio messaggi  
             pdu.VbList.Add(".1.3.6.1.2.1.1.1.0");                           //Nome stampante
             SnmpV1Packet auth = (SnmpV1Packet)target.Request(pdu, param);
-            String nomeStampante = GetNomeStampante(auth);
+            String nomeStampante = GetDatoStampante(auth);
             var Allvendor = SNMPContext.OIDs.Select(x => x.Vendor);         //query per ottenere tutti i nomi dei vendor conosciuti
             var vendor = Allvendor.Distinct();                              //distinct per eliminare i doppioni dall'elenco vendor
 
@@ -173,6 +214,7 @@ namespace SnmpClient
                     foreach (var i in item)
                     {
                         pdu.VbList.Add(i.NumeroOID);
+                        Console.WriteLine("OID da richiedere"+i.TipoDato);
                     }
 
                     SnmpV1Packet result = (SnmpV1Packet)target.Request(pdu, param);                 //Richiesta SNMP 
@@ -206,7 +248,7 @@ namespace SnmpClient
         {
             Discoverer discoverer = new Discoverer();
             discoverer.AgentFound += DiscovererAgentFound;
-            Console.WriteLine("v1 discovery");
+            Console.WriteLine("Discovery");
             await discoverer.DiscoverAsync(VersionCode.V1, new IPEndPoint(IPAddress.Broadcast, 161), new Lextm.SharpSnmpLib.OctetString("public"), 6000);
         }
 

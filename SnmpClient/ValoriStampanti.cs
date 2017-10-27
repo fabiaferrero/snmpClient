@@ -20,7 +20,7 @@ public partial class ValoriStampanti
 
     public int IDValore { get; set; }
 
-    public int IDStampante { get; set; }
+    public int IDDiscovery { get; set; }
 
     public string TipoDato { get; set; }
 
@@ -30,7 +30,7 @@ public partial class ValoriStampanti
 
 
 
-    public virtual Stampanti Stampanti { get; set; }
+    public virtual Discovery Discovery { get; set; }
 
 }
 

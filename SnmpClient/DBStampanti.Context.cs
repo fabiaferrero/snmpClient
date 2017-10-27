@@ -32,6 +32,8 @@ public partial class Entities : DbContext
     }
 
 
+    public virtual DbSet<Discovery> Discoveries { get; set; }
+
     public virtual DbSet<OID> OIDs { get; set; }
 
     public virtual DbSet<Stampanti> Stampantis { get; set; }

@@ -18,11 +18,11 @@ using System;
 public partial class OID
 {
 
-    public int ID { get; set; }
+    public int IDOid { get; set; }
 
     public string Vendor { get; set; }
 
-    public string Dato { get; set; }
+    public string TipoDato { get; set; }
 
     public string NumeroOID { get; set; }
 
