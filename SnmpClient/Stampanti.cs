@@ -37,6 +37,8 @@ public partial class Stampanti
 
     public System.DateTime Data { get; set; }
 
+    public string Vendor { get; set; }
+
 
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

@@ -20,17 +20,11 @@ namespace SnmpClient
 
         public SNMPControllo()
         {
-            InizializzaSNMP();
+
+        
             InitializeComponent();
         }
-        private void InizializzaSNMP()
-        {
-            community = new SnmpSharpNet.OctetString("public");              //SNMP community name, di default "public"
-            param = new AgentParameters(community);                          //Definisce parametri dell'agente, secondo community name
-            param.Version = SnmpVersion.Ver1;                                //Definizione versione SNMP 1
-            agent = new IpAddress("192.168.1.96");                           //Definizione indirizzo IP della macchina
-            target = new UdpTarget((IPAddress)agent, 161, 2000, 1);          //Definizione metodo con cui comunicare con la stampante: UDP, porta, timeout, retry
-        }
+     
 
         private int CreaId(IQueryable<int> q)
         {
@@ -42,9 +36,19 @@ namespace SnmpClient
             }
             return max + 1;
         }                                             //Crea ID del prossimo elemento da inserire nel DB risprendendo dall'ultimo                                                                                                                                     //Crea l'ID del prossimo elemento da salvare nel DB, riprendendo dall'ultimo inserito
+        private int OttieniChiaveDiscovery(string IndirizzoMAC)       //controlla se nella tabella stampanti vi  già la stampante scoperta
+        {
+            int dk = 0;
+            var recordDiscovery = SNMPContext.Discoveries.Where(x => x.MAC == IndirizzoMAC);
+            foreach(var riga in recordDiscovery)
+            {
+                dk = riga.IDDiscovery;
+            }
+            return dk;
+        }
         private int ControllaStampanti(string IndirizzoMAC, string nome, string ip)       //controlla se nella tabella stampanti vi  già la stampante scoperta
         {
-            int fk = 0;
+            int fk =0;
             var recordStampante = SNMPContext.Stampantis.Where(x => x.MAC == IndirizzoMAC);
             if (recordStampante.Count() == 0)
             {
@@ -56,6 +60,7 @@ namespace SnmpClient
                     MAC = IndirizzoMAC,
                     Data = System.DateTime.Now
                 };
+                Console.WriteLine("mac"+ IndirizzoMAC);
                 SNMPContext.Stampantis.Add(NuovaStampante);
                 SNMPContext.SaveChanges();
             }
@@ -71,12 +76,13 @@ namespace SnmpClient
             //Console.WriteLine("CHIAVE PRIMARIA"+fk);
             return fk;
         }
-        private string RichiediMac(string IP, string oid_mac)
+        private string RichiediMac(string oid_mac/* IpAddress addrIp*/)
         {
+            //IpAddress ip = new IpAddress(addrIp);
+            //target.Address = ip;
             string mac = System.String.Empty;
             Pdu pdu = new Pdu(PduType.Get);                                 //Unità dati dello scambio messaggi  
-            pdu.VbList.Add(oid_mac);                           //mac stampante
-            Console.WriteLine("OID RICHIESTO" + oid_mac);
+            pdu.VbList.Add(oid_mac);                                        //mac stampante                                                                                                                                                                                                                                                                                                                                                                                                                  
             SnmpV1Packet PckMac = (SnmpV1Packet)target.Request(pdu, param);
             mac = GetDatoStampante(PckMac);
             return mac;
@@ -100,12 +106,11 @@ namespace SnmpClient
                     {
                         if (i.TipoDato.Equals("MAC"))
                             oid_mac = i.NumeroOID;
-                        //Console.WriteLine("MAC Richiesto"+produttore);
                     }
                 }
             }
 
-            IndMac = RichiediMac(ip, oid_mac);
+            IndMac = RichiediMac(oid_mac);
             ChiaveStampante = ControllaStampanti(IndMac, nome, ip);
 
             Discovery DispositivoScoperto = new Discovery
@@ -122,35 +127,18 @@ namespace SnmpClient
         SNMPContext.SaveChanges();
             
         }
-
-        private string TrovaTipoDato(IQueryable<string> t)
+        private string TrovaTipoDato(string oidPdu, string produttore)
         {
             string Tipo = System.String.Empty;
-            
+            var listaOid = SNMPContext.OIDs.Where(x => x.NumeroOID.Equals(oidPdu));
+            var listaOidProduttore = listaOid.Where(x => x.Vendor == produttore);
+            foreach (var valore in listaOid)
+            {
+                //Console.WriteLine("OID trovato -> " + valore.TipoDato);
+                Tipo = valore.TipoDato;
+            }
             return Tipo;
         }
-
-        private void UpdateDB(SnmpV1Packet pck)
-        {
-            foreach (var i in pck.Pdu.VbList)
-            {
-                var listaOid = SNMPContext.OIDs.Where(x => x.NumeroOID.Equals(i.Oid));
-                foreach(var Myoid in listaOid)
-                {
-                    ValoriStampanti risultatoSNMP = new ValoriStampanti //salvataggio dati richiesti su database
-                    {
-                        IDValore = CreaId(SNMPContext.ValoriStampantis.Select(x => x.IDValore)),
-                        IDDiscovery = 0,
-                        TipoDato = "C",
-                        Valore = i.Value.ToString(),
-                        Data = DateTime.Now
-                    };
-                    SNMPContext.ValoriStampantis.Add(risultatoSNMP);  
-                }
-                SNMPContext.SaveChanges();
-            }
-        }
-
         private string GetDatoStampante(SnmpV1Packet pck)                                    //Analizza il pdu per ottenere il nome della stampante per verificare supporto
         {
             string StampantePdu = System.String.Empty;
@@ -162,7 +150,7 @@ namespace SnmpClient
                 }
                 else
                 {
-                    Console.WriteLine("NomeStampantePdu: ({0}): {1}", SnmpConstants.GetTypeName(pck.Pdu.VbList[0].Value.Type), pck.Pdu.VbList[0].Value.ToString());
+                    //Console.WriteLine("NomeStampantePdu: ({0}): {1}", SnmpConstants.GetTypeName(pck.Pdu.VbList[0].Value.Type), pck.Pdu.VbList[0].Value.ToString());
                     StampantePdu = pck.Pdu.VbList[0].Value.ToString();
                     return StampantePdu;
                 }
@@ -173,9 +161,9 @@ namespace SnmpClient
             }
             return StampantePdu;
         }
-
-        private void SalvataggioDatiDB(SnmpV1Packet pck)                                //Analizza il pdu e carica il valore del dato richiesto su db
+        private void SalvataggioDatiStampantiDB(SnmpV1Packet pck, string produttore)                                //Analizza il pdu e carica il valore del dato richiesto su db
         {
+            Entities contextSalvataggio = new Entities();
             if (pck != null)
             {
                 if (pck.Pdu.ErrorStatus != 0)
@@ -184,17 +172,42 @@ namespace SnmpClient
                 }
                 else
                 {
-                    UpdateDB(pck);
+                    foreach (var i in pck.Pdu.VbList)
+                    {
+                        string OIDmac= System.String.Empty;
+                        var item = SNMPContext.OIDs.Where(x => x.Vendor == produttore);
+                        foreach (var riga in item)
+                        {
+                            if (riga.TipoDato.Equals("MAC"))
+                                OIDmac = riga.NumeroOID;
+                        }
+                        string IndMac = RichiediMac(OIDmac);
+                        int chiaveDiscovery = OttieniChiaveDiscovery(IndMac);
+                 
+                        Console.WriteLine("valore trovato: " + i.Value);
+      
+                        ValoriStampanti risultatoSNMP = new ValoriStampanti //salvataggio dati richiesti su database
+                        {
+                            IDValore = CreaId(SNMPContext.ValoriStampantis.Select(x => x.IDValore)),
+                            IDDiscovery = chiaveDiscovery,
+                            TipoDato = TrovaTipoDato(i.Oid.ToString(), produttore),
+                            Valore = i.Value.ToString(),
+                            Data = DateTime.Now
+                        };
+                        contextSalvataggio.ValoriStampantis.Add(risultatoSNMP);
+                        contextSalvataggio.SaveChanges();
+                    }
+                    
+                    Console.WriteLine("Dati valori stampanti salvati");
                 }
             }
             else
             {
                 Console.WriteLine("Nessuna risposta dall'agente SNMP");
             }
-
         }
 
-        private void LeggiDatiStampante(UdpTarget target, AgentParameters param, Entities SNMPContext)
+        private void CaricaOidPdu(UdpTarget target, AgentParameters param, Entities SNMPContext)
         {
             Pdu pdu = new Pdu(PduType.Get);                                 //Unità dati dello scambio messaggi  
             pdu.VbList.Add(".1.3.6.1.2.1.1.1.0");                           //Nome stampante
@@ -207,18 +220,16 @@ namespace SnmpClient
             {
                 if (nomeStampante.Contains(v.ToString()))
                 {
+                    pdu = new Pdu(PduType.Get);
                     string produttore = v.ToString();
-                    Console.WriteLine("Produttore Stampanti supportato ==> " + v.ToString());
-
                     var item = SNMPContext.OIDs.Where(x => x.Vendor == produttore);
                     foreach (var i in item)
                     {
                         pdu.VbList.Add(i.NumeroOID);
-                        Console.WriteLine("OID da richiedere"+i.TipoDato);
+                        //Console.WriteLine("OID aggiunto in pdu "+i.TipoDato+" -> "+ i.NumeroOID);
                     }
-
                     SnmpV1Packet result = (SnmpV1Packet)target.Request(pdu, param);                 //Richiesta SNMP 
-                    SalvataggioDatiDB(result);
+                    SalvataggioDatiStampantiDB(result, produttore);
                 }
                 else
                 {
@@ -230,7 +241,7 @@ namespace SnmpClient
 
         private void CheckStampanteBotton_Click(object sender, EventArgs e)
         {
-            LeggiDatiStampante(target,param, SNMPContext);
+            CaricaOidPdu(target, param, SNMPContext);
         }
         
         public void Log(String ip, String disp)                                       //costruzione messaggio del log
@@ -254,8 +265,14 @@ namespace SnmpClient
 
         void DiscovererAgentFound(object sender, AgentFoundEventArgs e)
         {
+            community = new SnmpSharpNet.OctetString("public");              //SNMP community name, di default "public"
+            param = new AgentParameters(community);                          //Definisce parametri dell'agente, secondo community name
+            param.Version = SnmpVersion.Ver1;                                //Definizione versione SNMP 1
+            agent = new IpAddress(e.Agent.Address);                           //Definizione indirizzo IP della macchina
+            target = new UdpTarget((IPAddress)agent, 161, 2000, 1);
             Log(e.Agent.ToString(), e.Variable.Data.ToString()); //Dispositivo trovato nella rete e scritto nel file di log
             SalvaDatiDiscovery(e.Agent.ToString(), e.Variable.Data.ToString());
+           
         }       
     }
 }
