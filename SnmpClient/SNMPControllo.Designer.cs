@@ -28,50 +28,29 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.CheckStampante = new System.Windows.Forms.Button();
-            this.discoverBotton = new System.Windows.Forms.Button();
+            this.components = new System.ComponentModel.Container();
+            this.timer = new System.Windows.Forms.Timer(this.components);
+            this.label = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // CheckStampante
+            // timer
             // 
-            this.CheckStampante.AutoSize = true;
-            this.CheckStampante.BackColor = System.Drawing.Color.LightSteelBlue;
-            this.CheckStampante.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.CheckStampante.FlatAppearance.BorderSize = 0;
-            this.CheckStampante.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
-            this.CheckStampante.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.CheckStampante.Location = new System.Drawing.Point(214, 25);
-            this.CheckStampante.Margin = new System.Windows.Forms.Padding(4);
-            this.CheckStampante.Name = "CheckStampante";
-            this.CheckStampante.Size = new System.Drawing.Size(147, 31);
-            this.CheckStampante.TabIndex = 0;
-            this.CheckStampante.Text = "Check Stampante";
-            this.CheckStampante.UseVisualStyleBackColor = false;
-            this.CheckStampante.Click += new System.EventHandler(this.CheckStampanteBotton_Click);
+            this.timer.Interval = 5000;
             // 
-            // discoverBotton
+            // label
             // 
-            this.discoverBotton.BackColor = System.Drawing.Color.LightSteelBlue;
-            this.discoverBotton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.discoverBotton.FlatAppearance.BorderSize = 0;
-            this.discoverBotton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
-            this.discoverBotton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.discoverBotton.Location = new System.Drawing.Point(16, 26);
-            this.discoverBotton.Margin = new System.Windows.Forms.Padding(4);
-            this.discoverBotton.Name = "discoverBotton";
-            this.discoverBotton.Size = new System.Drawing.Size(147, 28);
-            this.discoverBotton.TabIndex = 6;
-            this.discoverBotton.Text = "Discover Stampanti";
-            this.discoverBotton.UseVisualStyleBackColor = false;
-            this.discoverBotton.Click += new System.EventHandler(this.discoverBotton_ClickAsync);
+            this.label.AutoSize = true;
+            this.label.Location = new System.Drawing.Point(261, 36);
+            this.label.Name = "label";
+            this.label.Size = new System.Drawing.Size(0, 17);
+            this.label.TabIndex = 7;
             // 
             // SNMPControllo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(404, 94);
-            this.Controls.Add(this.discoverBotton);
-            this.Controls.Add(this.CheckStampante);
+            this.Controls.Add(this.label);
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "SNMPControllo";
             this.Text = "SNMP Controllo Stampante";
@@ -81,9 +60,8 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Button CheckStampante;
-        private System.Windows.Forms.Button discoverBotton;
+        private System.Windows.Forms.Timer timer;
+        private System.Windows.Forms.Label label;
     }
 }
 
