@@ -29,19 +29,19 @@ public partial class Discovery
 
     public int IDDiscovery { get; set; }
 
-    public int IDStampante { get; set; }
+    public Nullable<int> IDStampante { get; set; }
 
     public string Nome { get; set; }
+
+    public string IP { get; set; }
 
     public string MAC { get; set; }
 
     public System.DateTime Data { get; set; }
 
-    public string IP { get; set; }
+    public string Trovato { get; set; }
 
 
-
-    public virtual Stampanti Stampanti { get; set; }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 
